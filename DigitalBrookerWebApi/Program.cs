@@ -83,6 +83,10 @@ builder.Services.AddScoped<IUserRepository, UerRepository>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddHttpContextAccessor(); //to access the http context in the service layer
+builder.Services.AddMediatR(configuration =>
+    {
+        configuration.RegisterServicesFromAssemblyContaining<Program>();
+    });
 
 var app = builder.Build();
 
@@ -103,27 +107,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-//Map the endpoints
-
-app.MapPost("api/account/register", async (IAccountService accountService, RegisterRequest registerRequest) =>
-{
-    await accountService.RegisterAsync(registerRequest);
-    return Results.Ok();
-});
-
-app.MapPost("api/account/login", async (IAccountService accountService, LoginRequest loginRequest) =>
-{
-    await accountService.LoginAsync(loginRequest);
-    return Results.Ok();
-});
-
-app.MapPost("api/account/refresh", async (IAccountService accountService, HttpContext httpContext ) =>
-{
-    var refreshToken = httpContext.Request.Cookies["refresh_token"];
-    await accountService.RefreshTokenAsync(refreshToken);
-    return Results.Ok();
-});
 
 app.MapGet("api/movies", () => Results.Ok(new List<string> { "Matrix" })).RequireAuthorization();
 

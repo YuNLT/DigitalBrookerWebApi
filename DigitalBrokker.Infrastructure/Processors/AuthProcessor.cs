@@ -13,16 +13,19 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using DigitalBroker.Application.Abstracts;
+using Microsoft.AspNetCore.Identity;
 namespace DigitalBrokker.Infrastructure.Processors
 {
     public class AuthProcessor : IAuthTokenProcessor
     {
         private readonly Jwt _jwtOptions;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public AuthProcessor(IOptions<Jwt> jwtOption, IHttpContextAccessor httpContextAccessor)
+        private readonly UserManager<User> _userManager;
+        public AuthProcessor(IOptions<Jwt> jwtOption, IHttpContextAccessor httpContextAccessor, UserManager<User> userManager)
         {
             _jwtOptions = jwtOption.Value;
             _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
         }
 
         //create method to generate jwt web token as a return type
@@ -48,6 +51,13 @@ namespace DigitalBrokker.Infrastructure.Processors
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.NameIdentifier, user.ToString()),
             };
+
+            //add the role of the user to the claims
+            var userRole = _userManager.GetRolesAsync(user);
+            foreach (var role in userRole.Result)
+            {
+                claims.Append(new Claim(ClaimTypes.Role, role));
+            }
 
             var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpireTime);
 

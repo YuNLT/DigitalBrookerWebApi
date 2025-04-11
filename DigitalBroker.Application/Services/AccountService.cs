@@ -2,6 +2,7 @@
 using DigitalBrooker.Domain.Entities;
 using DigitalBrooker.Domain.Entities.Request;
 using DigitalBrooker.Domain.Exception;
+using DigitalBrooker.Domain.UserRole;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -42,6 +43,7 @@ namespace DigitalBroker.Application.Services
 
             //add hash password
             newUser.PasswordHash = _userManager.PasswordHasher.HashPassword(newUser, register.Password);
+
             var result = await _userManager.CreateAsync(newUser);
 
             //check creation succeed or not
@@ -50,6 +52,9 @@ namespace DigitalBroker.Application.Services
                 throw new RegistrationfailException(result.Errors.Select(e => e.Description)
                     .ToList());
             }
+
+            //add default role to the user
+            await _userManager.AddToRoleAsync(newUser, StaticUserRole.Buyer);
         }
 
         //Method to login a user
@@ -60,6 +65,7 @@ namespace DigitalBroker.Application.Services
             {
                 throw new LoginFailException(logionRequet.Email);
             }
+
 
             //create jwt token and refresh token for the user
             var (token, expireTime) = _authTokenProcessor.GenerateToken(user);
