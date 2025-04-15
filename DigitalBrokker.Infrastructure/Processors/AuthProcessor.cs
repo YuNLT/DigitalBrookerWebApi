@@ -1,5 +1,4 @@
 ﻿using DigitalBrokker.Infrastructure.Options;
-using DigitalBrooker.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -14,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DigitalBroker.Application.Abstracts;
 using Microsoft.AspNetCore.Identity;
+using DigitalBrooker.Domain.Entities.Models;
 namespace DigitalBrokker.Infrastructure.Processors
 {
     public class AuthProcessor : IAuthTokenProcessor
@@ -29,7 +29,7 @@ namespace DigitalBrokker.Infrastructure.Processors
         }
 
         //create method to generate jwt web token as a return type
-        public (string token, DateTime expireTime) GenerateToken(User user)
+        public (string token, DateTime expireTime) GenerateToken(User user, IList<string> roles)
         {
             //make an object of secret in jsonsetting and encode it
             var signingkey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
@@ -40,7 +40,7 @@ namespace DigitalBrokker.Infrastructure.Processors
                 SecurityAlgorithms.HmacSha256);
 
             //create the array of the claims based on user passed as the parameter
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 //First, type of the subject(jwt register claim name)
                 //second unique identifier of each token and generate a new unique id with guid
@@ -56,7 +56,7 @@ namespace DigitalBrokker.Infrastructure.Processors
             var userRole = _userManager.GetRolesAsync(user);
             foreach (var role in userRole.Result)
             {
-                claims.Append(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             var expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpireTime);
@@ -77,7 +77,7 @@ namespace DigitalBrokker.Infrastructure.Processors
             return (tokenHandler, expires);
         }
 
-        //Create the method to Refresh the token to the type of guid
+        //Create the method to Refresh the token to the type of 64byte
         public string GenerateRefreshToken()
         {
             var randomNumber = new byte[64];

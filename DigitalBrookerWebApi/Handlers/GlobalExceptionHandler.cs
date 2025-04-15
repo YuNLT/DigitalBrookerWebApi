@@ -34,6 +34,7 @@ namespace DigitalBrookerWebApi.Handlers
                 UserAlreadyExistException => (HttpStatusCode.Conflict, exception.Message),
                 RegistrationfailException => (HttpStatusCode.BadRequest, exception.Message),
                 RefreshTokenException => (HttpStatusCode.Unauthorized, exception.Message),
+                ForgetPasswordFailException => (HttpStatusCode.BadRequest, exception.Message),
                 _ => (HttpStatusCode.InternalServerError, $"An unexpected error occurred: {exception.Message}")
             };
         }

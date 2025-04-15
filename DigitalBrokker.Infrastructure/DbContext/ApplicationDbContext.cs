@@ -1,4 +1,4 @@
-﻿using DigitalBrooker.Domain.Entities;
+﻿using DigitalBrooker.Domain.Entities.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -8,16 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DigitalBrokker.Infrastructure
+namespace DigitalBrokker.Infrastructure.DbContext
 {
     public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options)
         {
-
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<PasswordReset> PasswordResets { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

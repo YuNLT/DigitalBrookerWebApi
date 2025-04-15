@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Win32.SafeHandles;
 
-namespace DigitalBrooker.Domain.Entities
+namespace DigitalBrooker.Domain.Entities.Models
 {
     public class User : IdentityUser<Guid>
     {
@@ -16,14 +16,14 @@ namespace DigitalBrooker.Domain.Entities
         public required string LastName { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
-        public static User Create(string email, string firstName, string lastName)
+        public static User Create(string firstName, string lastName, string email)
         {
             return new User
             {
-                Email = email,
-                UserName = email,
                 FirstName = firstName,
                 LastName = lastName,
+                Email = email,
+                UserName = email,
             };
             
         }

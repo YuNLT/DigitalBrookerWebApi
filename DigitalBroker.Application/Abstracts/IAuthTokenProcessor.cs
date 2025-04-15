@@ -1,4 +1,4 @@
-﻿using DigitalBrooker.Domain.Entities;
+﻿using DigitalBrooker.Domain.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace DigitalBroker.Application.Abstracts
 {
     public interface IAuthTokenProcessor
     {
-        (string token, DateTime expireTime) GenerateToken(User user);
+        (string token, DateTime expireTime) GenerateToken(User user, IList<string> roles);
         string GenerateRefreshToken();
         void WriteTokenInHttpOnlyCookie(string cookieName, string token, DateTime expireTime);
     }

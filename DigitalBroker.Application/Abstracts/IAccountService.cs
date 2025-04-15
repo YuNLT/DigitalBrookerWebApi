@@ -9,9 +9,10 @@ namespace DigitalBroker.Application.Abstracts
 {
     public interface IAccountService
     {
-        Task RegisterAsync(RegisterRequest register);
-        Task LoginAsync(LoginRequest logionRequet);
+        Task RegisterAsync(string firstName, string lastName, string email, string password);
+        Task LoginAsync(string email, string password);
         Task RefreshTokenAsync(string? refreshToken);
-
+        Task ResetPasswordAsync(Guid resetToken, string newPassword);
+        Task ForgetPasswordAsync(string forgetPassword);
     }
 }

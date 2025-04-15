@@ -1,16 +1,20 @@
 using DigitalBroker.Application.Abstracts;
+using DigitalBroker.Application.Commands;
+using DigitalBroker.Application.Handlers;
 using DigitalBroker.Application.Services;
-using DigitalBrokker.Infrastructure;
+using DigitalBrokker.Infrastructure.DbContext;
 using DigitalBrokker.Infrastructure.Options;
 using DigitalBrokker.Infrastructure.Processors;
 using DigitalBrokker.Infrastructure.Repositories;
-using DigitalBrooker.Domain.Entities;
+using DigitalBrooker.Domain.Constants;
+using DigitalBrooker.Domain.Entities.Models;
 using DigitalBrooker.Domain.Entities.Request;
 using DigitalBrookerWebApi.Handlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using System.Text;
@@ -83,10 +87,17 @@ builder.Services.AddScoped<IUserRepository, UerRepository>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddHttpContextAccessor(); //to access the http context in the service layer
-builder.Services.AddMediatR(configuration =>
-    {
-        configuration.RegisterServicesFromAssemblyContaining<Program>();
-    });
+
+//Add MediatR
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(RegisterCommand).Assembly));
+
+
+//smtp services
+builder.Services.Configure<SmtpInfo>(builder.Configuration.GetSection("SmtpInfo"));
+builder.Services.AddSingleton(resolver =>
+    resolver.GetRequiredService<IOptions<SmtpInfo>>().Value);
+builder.Services.AddScoped<ISmtpEmailService, SmtpEmailService>();
 
 var app = builder.Build();
 
@@ -107,8 +118,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.MapGet("api/movies", () => Results.Ok(new List<string> { "Matrix" })).RequireAuthorization();
 
 app.MapControllers();
 
