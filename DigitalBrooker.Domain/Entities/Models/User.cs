@@ -16,6 +16,8 @@ namespace DigitalBrooker.Domain.Entities.Models
         public required string LastName { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsActive { get; set; }
         public static User Create(string firstName, string lastName, string email)
         {
             return new User
@@ -24,6 +26,8 @@ namespace DigitalBrooker.Domain.Entities.Models
                 LastName = lastName,
                 Email = email,
                 UserName = email,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
             };
             
         }
