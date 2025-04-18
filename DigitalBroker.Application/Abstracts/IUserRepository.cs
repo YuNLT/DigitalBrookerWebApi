@@ -9,7 +9,6 @@ namespace DigitalBroker.Application.Abstracts
 {
     public interface IUserRepository
     {
-        Task<User?> GetUserByTokenAsync(string token);
         Task<User?> GetByEmailAsync(string email);
         Task UpdateAsync(User user);
         Task<PasswordReset?> GetResetTokenByUserAsync(User user);
@@ -20,7 +19,6 @@ namespace DigitalBroker.Application.Abstracts
         Task<User?> GetByEmailWithRefreshTokenAsync(string email, string refreshToken);
         Task<PasswordReset?> GetValidPasswordResetTokenAsync(Guid token);
         Task UpdateUserPasswordAsync(User user);
-        Task RemoveTokenAsync(PasswordReset token);
         Task DeletePasswordResetTokenAsync(PasswordReset token);
     }
 }

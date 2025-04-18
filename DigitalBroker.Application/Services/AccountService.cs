@@ -102,7 +102,7 @@ namespace DigitalBroker.Application.Services
             //To get the user based on the provided refresh token on the databse
             //To do that create custom repository in the infracture layer to call the database and to check the based on the refresh token
             //so that we know able to retrieve the user or not 
-            var user = await _userRepository.GetUserByTokenAsync(refreshToken);
+            var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
             if (user == null)
             {
                 throw new RefreshTokenException("Unable to find user with this refresh token");
@@ -135,18 +135,18 @@ namespace DigitalBroker.Application.Services
             _authTokenProcessor.WriteTokenInHttpOnlyCookie("refresh_token", newRefreshToken, refreshTokenExpireTime);//token that we created above
         }
 
-        public async Task ForgetPasswordAsync(string forgetPassword)
+        public async Task ForgetPasswordAsync(string email)
         {
-            var user = await _userRepository.GetByEmailAsync(forgetPassword);
+            var user = await _userRepository.GetByEmailAsync(email);
             if (user == null)
             {
-                throw new UserNotFoundException("User does not register yet");
+                throw new ForgetPasswordFailException("There is no user with this email");
             }
             var passwordReset = await _userRepository.GetResetTokenByUserAsync(user);
-
-            // Generate random key (GUID)
+            
             var token = Guid.NewGuid();
-            if (passwordReset == null)
+
+            if(passwordReset == null)
             {
                 passwordReset = new PasswordReset
                 {
@@ -155,38 +155,67 @@ namespace DigitalBroker.Application.Services
                     ExpireAt = DateTime.UtcNow.AddMinutes(15)
                 };
             }
-
+            else
+            {
+                passwordReset.ResetPasswordToken = token;
+                passwordReset.ExpireAt = DateTime.UtcNow.AddMinutes(15);
+            }
             await _userRepository.UpdateTokenAsync(passwordReset);
 
             var subject = "Reset Your Password";
             var body = $"Here is your reset token: {token}";
 
-           await _smtpEmailService.SentPasswordAsync(forgetPassword, subject, body);
+           await _smtpEmailService.SentPasswordAsync(email, subject, body);
         }
 
         public async Task ResetPasswordAsync(Guid resetToken, string newPassword)
         {
-            // Step 1: Get the password reset token entity
             var passwordReset = await _userRepository.GetValidPasswordResetTokenAsync(resetToken);
             if (passwordReset == null)
             {
-                throw new EmptyPasswordResetTokenException("Password Reset Token does not created yet");
+                throw new MisMatchTokenException("Password Token does not match");
             }
 
             var user = passwordReset.User;
             if (user == null)
             {
-                throw new MisMatchTokenException("Password Token does not match");
+                throw new EmptyPasswordResetTokenException("There is no user with accessible to the this password reset token or user is emplty");
             }
-
-            // Step 2: Hash and update the user's password
             var hasher = new PasswordHasher<User>();
             user.PasswordHash = hasher.HashPassword(user, newPassword);
 
             await _userRepository.UpdateUserPasswordAsync(user);
-
-            // Step 3: Remove or expire the token
             await _userRepository.DeletePasswordResetTokenAsync(passwordReset);
+        }
+
+        public async Task SeedRoleToAdminAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new UserAlreadyExistException(email);
+            }
+            var isAdmin = await _userManager.IsInRoleAsync(user, StaticUserRole.Admin);
+            if (isAdmin)
+            {
+                throw new UserAlreadyExistException(email);
+            }
+            await _userManager.AddToRoleAsync(user, StaticUserRole.Admin);
+        }
+
+        public async Task SeedRoleToSellerAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new UserAlreadyExistException(email);
+            }
+            var isSeller = await _userManager.IsInRoleAsync(user, StaticUserRole.Seller);
+            if (isSeller)
+            {
+                throw new UserAlreadyExistException(email);
+            }
+            await _userManager.AddToRoleAsync(user, StaticUserRole.Seller);
         }
     }
 }

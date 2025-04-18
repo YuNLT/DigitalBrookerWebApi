@@ -17,13 +17,6 @@ namespace DigitalBrokker.Infrastructure.Repositories
             _userManager = userManager;
         }
 
-        //Method to get user by refresh token
-        public async Task<User?> GetUserByTokenAsync(string token)
-        {
-            var user = await _applicationDbContext.Users.FirstOrDefaultAsync(x => x.RefreshToken == token);
-            return user;
-        }
-
         public async Task<User?> GetByEmailAsync(string email)
         {
            var user = await _userManager.Users
@@ -37,8 +30,8 @@ namespace DigitalBrokker.Infrastructure.Repositories
 
         public async Task UpdateAsync(User user)
         {
-            _applicationDbContext.Users.Update(user); // Or _userManager.UpdateAsync(user);
-            await _applicationDbContext.SaveChangesAsync(); // Save using DbContext
+            _applicationDbContext.Users.Update(user); 
+            await _applicationDbContext.SaveChangesAsync(); 
         }
 
         public async Task<User?> GetByIdAsync(Guid id)
@@ -84,12 +77,6 @@ namespace DigitalBrokker.Infrastructure.Repositories
         public async Task UpdateUserPasswordAsync(User user)
         {
             _applicationDbContext.Users.Update(user);
-            await _applicationDbContext.SaveChangesAsync();
-        }
-
-        public async Task RemoveTokenAsync(PasswordReset token)
-        {
-            _applicationDbContext.PasswordResets.Remove(token);
             await _applicationDbContext.SaveChangesAsync();
         }
         public async Task DeletePasswordResetTokenAsync(PasswordReset token)

@@ -22,8 +22,8 @@ namespace DigitalBroker.Application.Services
             email.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
 
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls); // Make sure this is StartTls
-            await smtp.AuthenticateAsync(_smtpInfo.smtpEmail, _smtpInfo.smtpPassword); // Critical line
+            await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls); 
+            await smtp.AuthenticateAsync(_smtpInfo.smtpEmail, _smtpInfo.smtpPassword); 
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }

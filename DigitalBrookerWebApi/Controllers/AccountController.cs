@@ -35,7 +35,7 @@ namespace DigitalBrookerWebApi.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest, CancellationToken cancellationToken)
         {
             await _mediatR.Send(new LoginCommand(loginRequest.Email, loginRequest.Password));
             return Ok();
@@ -52,7 +52,7 @@ namespace DigitalBrookerWebApi.Controllers
         }
 
         [HttpPost("Reset-Password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPassword request)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPassword request, CancellationToken cancellation)
         {
             var result = await _mediatR.Send(new ResetPasswordCommand(request.ResetPasswordToken, request.Password));
 
@@ -63,11 +63,24 @@ namespace DigitalBrookerWebApi.Controllers
         }
 
         [HttpPost("RefreshToken")]
-        public async Task<IActionResult> RefreshTokenAsync([FromBody]HttpContext httpContext)
+        public async Task<IActionResult> RefreshTokenAsync()
         {
-            var refreshToken = httpContext.Request.Cookies["refresh-token"];
+            var refreshToken = HttpContext.Request.Cookies["refresh_token"];
             await _mediatR.Send(new  RefreshTokenCommand(refreshToken));
             return Ok();
+        }
+        [HttpPost("SeeRoleToAdmin")]
+        public async Task<IActionResult> SeeRoleToAdminAsync([FromBody] RoleUpdatePermission request)
+        {
+            var result = await _mediatR.Send(new SeedRoleToAdminCommand(request.Email));
+            return Ok(result);
+        }
+
+        [HttpPost("SeeRoleToSeller")]
+        public async Task<IActionResult> SeeRoleToSellerAsync([FromBody] RoleUpdatePermission request)
+        {
+            var result = await _mediatR.Send(new SeedRoleToSellerCommand(request.Email));
+            return Ok(result);
         }
     }
 }

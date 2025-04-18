@@ -14,5 +14,7 @@ namespace DigitalBroker.Application.Abstracts
         Task RefreshTokenAsync(string? refreshToken);
         Task ResetPasswordAsync(Guid resetToken, string newPassword);
         Task ForgetPasswordAsync(string forgetPassword);
+        Task SeedRoleToAdminAsync(string email);
+        Task SeedRoleToSellerAsync(string email);
     }
 }

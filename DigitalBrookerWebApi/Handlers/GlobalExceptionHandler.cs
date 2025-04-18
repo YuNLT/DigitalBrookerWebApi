@@ -1,4 +1,6 @@
-﻿using DigitalBrooker.Domain.Exception;
+﻿using DigitalBroker.Application.Exception;
+using DigitalBrokker.Infrastructure.Exceptions;
+using DigitalBrooker.Domain.Exception;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Net;
 
@@ -35,6 +37,12 @@ namespace DigitalBrookerWebApi.Handlers
                 RegistrationfailException => (HttpStatusCode.BadRequest, exception.Message),
                 RefreshTokenException => (HttpStatusCode.Unauthorized, exception.Message),
                 ForgetPasswordFailException => (HttpStatusCode.BadRequest, exception.Message),
+                EmptyResetPasswordTokenException => (HttpStatusCode.BadRequest, exception.Message),
+                MissingFieldException => (HttpStatusCode.BadRequest, exception.Message),
+                ResetPasswordTokenException => (HttpStatusCode.Unauthorized, exception.Message),
+                UserNotFoundException => (HttpStatusCode.NotFound, exception.Message),
+                EmptyUserException => (HttpStatusCode.NotFound, exception.Message),
+                PasswordUpdateError => (HttpStatusCode.BadRequest, exception.Message),
                 _ => (HttpStatusCode.InternalServerError, $"An unexpected error occurred: {exception.Message}")
             };
         }
