@@ -1,11 +1,4 @@
-﻿using DigitalBrooker.Domain.Entities.Request;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DigitalBroker.Application.Abstracts
+﻿namespace DigitalBroker.Application.Abstracts
 {
     public interface IAccountService
     {
@@ -14,6 +7,7 @@ namespace DigitalBroker.Application.Abstracts
         Task RefreshTokenAsync(string? refreshToken);
         Task ResetPasswordAsync(Guid resetToken, string newPassword);
         Task ForgetPasswordAsync(string forgetPassword);
+        Task<string> DeactivateAsync(string email, string password);
         Task SeedRoleToAdminAsync(string email);
         Task SeedRoleToSellerAsync(string email);
     }

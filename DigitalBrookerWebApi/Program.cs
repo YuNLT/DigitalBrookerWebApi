@@ -8,7 +8,6 @@ using DigitalBrokker.Infrastructure.Processors;
 using DigitalBrokker.Infrastructure.Repositories;
 using DigitalBrooker.Domain.Constants;
 using DigitalBrooker.Domain.Entities.Models;
-using DigitalBrooker.Domain.Entities.Request;
 using DigitalBrookerWebApi.Handlers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -82,9 +81,13 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 //Program services
+
 builder.Services.AddScoped<IAuthTokenProcessor, AuthProcessor>(); //<Iterface, class that implements the interface>
 builder.Services.AddScoped<IUserRepository, UerRepository>();
+builder.Services.AddScoped<ISmtpEmailService, SmtpEmailService>();
+builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddHttpContextAccessor(); //to access the http context in the service layer
 

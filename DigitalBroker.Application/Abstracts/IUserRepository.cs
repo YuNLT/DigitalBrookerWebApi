@@ -1,10 +1,4 @@
 ﻿using DigitalBrooker.Domain.Entities.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace DigitalBroker.Application.Abstracts
 {
     public interface IUserRepository
@@ -14,6 +8,7 @@ namespace DigitalBroker.Application.Abstracts
         Task<PasswordReset?> GetResetTokenByUserAsync(User user);
         Task UpdateTokenAsync(PasswordReset passwordReset);
         Task<User?> GetByIdAsync(Guid id);
+        Task<string> GetNameById(string id);
         Task<User?> GetByRefreshTokenAsync(string token);
         Task<User?> GetByEmailWithRefreshTokenAsync(string email);
         Task<User?> GetByEmailWithRefreshTokenAsync(string email, string refreshToken);

@@ -1,10 +1,4 @@
 ﻿using DigitalBrooker.Domain.Exception;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace DigitalBrooker.Domain.ValueObjects
 {
     public record ResetPasswordToken

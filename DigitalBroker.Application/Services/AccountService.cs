@@ -1,16 +1,9 @@
 ﻿using DigitalBroker.Application.Abstracts;
 using DigitalBroker.Application.Exception;
 using DigitalBrooker.Domain.Entities.Models;
-using DigitalBrooker.Domain.Entities.Request;
 using DigitalBrooker.Domain.Exception;
 using DigitalBrooker.Domain.UserRole;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DigitalBroker.Application.Services
 {
@@ -69,6 +62,12 @@ namespace DigitalBroker.Application.Services
             if (user == null || !await _userManager.CheckPasswordAsync(user, password))
             {
                 throw new LoginFailException(email);
+            }
+
+            //check if the user is active or not
+            if (!user.IsActive)
+            {
+                throw new IsActiveException(email);
             }
 
             //get the user role
@@ -188,6 +187,21 @@ namespace DigitalBroker.Application.Services
             await _userRepository.DeletePasswordResetTokenAsync(passwordReset);
         }
 
+        public async Task<string> DeactivateAsync(string email, string password)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, password))
+            {
+                throw new LoginFailException(email);
+            }
+            user.IsActive = false;
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return "User deactivated successfully";
+            }
+            return "User deactivation failed";
+        }
         public async Task SeedRoleToAdminAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);

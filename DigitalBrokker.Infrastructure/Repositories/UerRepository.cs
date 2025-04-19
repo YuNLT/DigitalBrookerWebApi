@@ -39,7 +39,13 @@ namespace DigitalBrokker.Infrastructure.Repositories
             return await _applicationDbContext.Users
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
-
+        public async Task<string> GetNameById(string id)
+        {
+            var user = await _applicationDbContext.Users
+                .FirstOrDefaultAsync(u => u.Id.ToString() == id);
+            var Name = user?.FirstName + " " + user?.LastName;
+            return Name;
+        }
         public async Task<User?> GetByRefreshTokenAsync(string token)
         {
             return await _applicationDbContext.Users

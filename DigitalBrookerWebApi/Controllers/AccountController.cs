@@ -1,7 +1,5 @@
-﻿using DigitalBroker.Application.Abstracts;
-using DigitalBroker.Application.Commands;
+﻿using DigitalBroker.Application.Commands;
 using DigitalBrooker.Domain.Entities.Request;
-using DigitalBrookerWebApi.Handlers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,7 +49,7 @@ namespace DigitalBrookerWebApi.Controllers
             return Ok();
         }
 
-        [HttpPost("Reset-Password")]
+        [HttpPatch("Reset-Password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPassword request, CancellationToken cancellation)
         {
             var result = await _mediatR.Send(new ResetPasswordCommand(request.ResetPasswordToken, request.Password));
@@ -62,6 +60,13 @@ namespace DigitalBrookerWebApi.Controllers
             return BadRequest(new { message = "Invalid or expired reset token." });
         }
 
+        [HttpPatch("Deactivate")]
+        public async Task<IActionResult> DeactivateUser([FromBody] Deactivate request)
+        {
+            var result = await _mediatR.Send(new DeactivateCommand(request.Email, request.Password));
+            return Ok(result);
+        }
+
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshTokenAsync()
         {
@@ -69,6 +74,7 @@ namespace DigitalBrookerWebApi.Controllers
             await _mediatR.Send(new  RefreshTokenCommand(refreshToken));
             return Ok();
         }
+
         [HttpPost("SeeRoleToAdmin")]
         public async Task<IActionResult> SeeRoleToAdminAsync([FromBody] RoleUpdatePermission request)
         {

@@ -1,12 +1,6 @@
 ﻿using DigitalBroker.Application.Abstracts;
 using DigitalBroker.Application.Commands;
-using DigitalBrooker.Domain.Entities.Models;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DigitalBroker.Application.Handlers
 {

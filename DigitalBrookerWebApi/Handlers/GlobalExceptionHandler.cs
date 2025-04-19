@@ -43,6 +43,7 @@ namespace DigitalBrookerWebApi.Handlers
                 UserNotFoundException => (HttpStatusCode.NotFound, exception.Message),
                 EmptyUserException => (HttpStatusCode.NotFound, exception.Message),
                 PasswordUpdateError => (HttpStatusCode.BadRequest, exception.Message),
+                IsActiveException => (HttpStatusCode.Unauthorized, exception.Message),
                 _ => (HttpStatusCode.InternalServerError, $"An unexpected error occurred: {exception.Message}")
             };
         }
