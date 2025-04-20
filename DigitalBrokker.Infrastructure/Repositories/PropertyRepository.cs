@@ -1,15 +1,10 @@
 ﻿using DigitalBroker.Application.Abstracts;
+using DigitalBroker.Application.Exception;
 using DigitalBrokker.Infrastructure.DbContext;
 using DigitalBrooker.Domain.Entities.Models;
-using DigitalBrooker.Domain.Entities.Request;
+using DigitalBrooker.Domain.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DigitalBrokker.Infrastructure.Repositories
 {
@@ -41,5 +36,54 @@ namespace DigitalBrokker.Infrastructure.Repositories
             return posts;
         }
 
+        public async Task<string> GetLatestPropertyViewIdAsync()
+        {// Get all IDs that match the pattern
+            var validIds = await _applicationDbContext.Properties
+                .Where(p => p.PropertyViewId.StartsWith("PVD-"))
+                .Select(p => p.PropertyViewId)
+                .ToListAsync();
+
+            int maxNumber = 0;
+
+            foreach (var id in validIds)
+            {
+                var parts = id.Split('-');
+                if (parts.Length == 2 && int.TryParse(parts[1], out int number))
+                {
+                    if (number > maxNumber)
+                        maxNumber = number;
+                }
+            }
+
+            // Generate next ID
+            int nextNumber = maxNumber + 1;
+            return $"PVD-{nextNumber:D8}";
+        }
+        public async Task<Property> CreatePropertyAsync(string address, decimal price, string description, byte[] image,
+            string propertyType, string township, string title, Guid userId)
+        {
+            var propertyViewId = await GetLatestPropertyViewIdAsync();
+            //Create a new PropertyType opject and set it as PropertyType in model
+            var propertyTypeValue = PropertyType.From(propertyType);
+            var property = new Property
+            {
+                PropertyViewId = propertyViewId,
+                Address = address,
+                Price = price,
+                Description = description,
+                Image = image,
+                PropertyTypeValue = propertyTypeValue,
+                Township = township,
+                Title = title,
+                UserId = userId
+            };
+            if(property == null)
+            {
+                throw new PropertyCreationException("Property Creation falied");
+            }
+            _applicationDbContext.Properties.Add(property);
+            await _applicationDbContext.SaveChangesAsync();
+            return property;
+        }
     }
 }

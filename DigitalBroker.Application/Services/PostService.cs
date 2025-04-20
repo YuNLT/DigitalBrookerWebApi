@@ -11,9 +11,11 @@ namespace DigitalBroker.Application.Services
     public class PostService : IPostService
     {
         private readonly IPropertyRepository _propertyRepository;
-        public PostService(IPropertyRepository propertyRepository)
+        private readonly ISellerRequestRepository _sellerRequestRepository;
+        public PostService(IPropertyRepository propertyRepository, ISellerRequestRepository sellerRequestRepository)
         {
             _propertyRepository = propertyRepository;
+            _sellerRequestRepository = sellerRequestRepository;
         }
         public async Task<List<Post>> GetAllPostAsync()
         {
@@ -32,6 +34,16 @@ namespace DigitalBroker.Application.Services
             }).ToList();
 
             return posts;
+        }
+
+        public async Task CreatePostAndSellerRequestAsync(string address, decimal price, string description, byte[] image,
+            string propertyType, string township, string title, Guid userId, DateTime appointmentDate, string requestStatusValue)
+        {
+            var property = await _propertyRepository.CreatePropertyAsync(address, price, description, image,
+               propertyType, township, title, userId);
+            Guid propertyId = property.Id;
+            await _sellerRequestRepository.CrateSellerRequestAsync(userId, propertyId, appointmentDate,
+                requestStatusValue);
         }
     }
 }

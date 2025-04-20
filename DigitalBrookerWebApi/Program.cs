@@ -81,13 +81,14 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 //Program services
-
 builder.Services.AddScoped<IAuthTokenProcessor, AuthProcessor>(); //<Iterface, class that implements the interface>
 builder.Services.AddScoped<IUserRepository, UerRepository>();
 builder.Services.AddScoped<ISmtpEmailService, SmtpEmailService>();
 builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<ISellerRequestRepository, SellerRequestRepository>();
+
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddHttpContextAccessor(); //to access the http context in the service layer
 
@@ -110,7 +111,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference(option=>
     {
-        option.Title = "Digital Broker API";
+        option.Title = "Digital Brooker API";
     });
 }
 
