@@ -1,13 +1,10 @@
-﻿using MediatR;
+﻿using DigitalBroker.Application.DTOs;
+using MediatR;
 
 namespace DigitalBroker.Application.Commands
 {
     public class ForgetPasswordCommand : IRequest<bool>
     {
-        public string Email { get; set; } 
-        public ForgetPasswordCommand(string email)
-        {
-            Email = email;
-        }
+        public ForgetPassword ForgetPassword { get; set; }
     }
 }

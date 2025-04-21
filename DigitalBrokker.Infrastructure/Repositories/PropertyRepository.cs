@@ -1,9 +1,10 @@
 ﻿using DigitalBroker.Application.Abstracts;
+using DigitalBroker.Application.DTOs;
 using DigitalBroker.Application.Exception;
 using DigitalBrokker.Infrastructure.DbContext;
 using DigitalBrooker.Domain.Entities.Models;
 using DigitalBrooker.Domain.ValueObjects;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace DigitalBrokker.Infrastructure.Repositories
@@ -11,11 +12,9 @@ namespace DigitalBrokker.Infrastructure.Repositories
     public class PropertyRepository : IPropertyRepository
     {
         private readonly ApplicationDbContext _applicationDbContext;
-        private readonly UserManager<User> _userManager;
-        public PropertyRepository(ApplicationDbContext applicationDbContext, UserManager<User> userManager)
+        public PropertyRepository(ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;
-            _userManager = userManager;
         }
         public async Task<List<Property>> GetAllPostAsync()
         {
@@ -59,19 +58,21 @@ namespace DigitalBrokker.Infrastructure.Repositories
             int nextNumber = maxNumber + 1;
             return $"PVD-{nextNumber:D8}";
         }
-        public async Task<Property> CreatePropertyAsync(string address, decimal price, string description, byte[] image,
-            string propertyType, string township, string title, Guid userId)
+        public async Task<Property> CreatePropertyAsync(string address, decimal price, string description, IFormFile image,
+            string propertyTypeValue, string township, string title, Guid userId)
         {
             var propertyViewId = await GetLatestPropertyViewIdAsync();
             //Create a new PropertyType opject and set it as PropertyType in model
-            var propertyTypeValue = PropertyType.From(propertyType);
+            using var ms = new MemoryStream();
+            await image.CopyToAsync(ms);
+            var imageByte = ms.ToArray();
             var property = new Property
             {
                 PropertyViewId = propertyViewId,
                 Address = address,
                 Price = price,
                 Description = description,
-                Image = image,
+                Image = imageByte,
                 PropertyTypeValue = propertyTypeValue,
                 Township = township,
                 Title = title,

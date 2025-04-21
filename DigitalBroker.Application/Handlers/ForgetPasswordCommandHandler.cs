@@ -14,7 +14,7 @@ namespace DigitalBroker.Application.Handlers
 
         public async Task<bool> Handle(ForgetPasswordCommand request, CancellationToken cancellationToken)
         {
-            await _accountService.ForgetPasswordAsync(request.Email);
+            await _accountService.ForgetPasswordAsync(request.ForgetPassword);
             return true;
         }
     }

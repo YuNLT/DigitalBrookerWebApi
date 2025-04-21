@@ -25,7 +25,6 @@
   <ItemGroup>
     <ProjectReference Include="..\DigitalBroker.Application\DigitalBroker.Application.csproj" />
     <ProjectReference Include="..\DigitalBrokker.Infrastructure\DigitalBrokker.Infrastructure.csproj" />
-    <ProjectReference Include="..\DigitalBrooker.Domain\DigitalBrooker.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

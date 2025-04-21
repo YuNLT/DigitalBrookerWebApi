@@ -1,10 +1,5 @@
 ﻿using DigitalBroker.Application.Abstracts;
-using DigitalBrooker.Domain.Entities.Request;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DigitalBroker.Application.DTOs;
 
 namespace DigitalBroker.Application.Services
 {
@@ -36,14 +31,14 @@ namespace DigitalBroker.Application.Services
             return posts;
         }
 
-        public async Task CreatePostAndSellerRequestAsync(string address, decimal price, string description, byte[] image,
-            string propertyType, string township, string title, Guid userId, DateTime appointmentDate, string requestStatusValue)
+        public async Task CreatePostAndSellerRequestAsync(PostRequest request)
         {
-            var property = await _propertyRepository.CreatePropertyAsync(address, price, description, image,
-               propertyType, township, title, userId);
+            var property = await _propertyRepository.CreatePropertyAsync(request.Address, request.Price, 
+                request.Description, request.Image,
+               request.PropertyTypeValue, request.Township, request.Title, request.UserId);
             Guid propertyId = property.Id;
-            await _sellerRequestRepository.CrateSellerRequestAsync(userId, propertyId, appointmentDate,
-                requestStatusValue);
+            await _sellerRequestRepository.CrateSellerRequestAsync(request.UserId, propertyId, request.AppointmentDate,
+                request.RequestStatusValue);
         }
     }
 }

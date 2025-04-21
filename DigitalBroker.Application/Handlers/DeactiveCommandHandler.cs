@@ -13,7 +13,7 @@ namespace DigitalBroker.Application.Handlers
         }
         public async Task<string> Handle(DeactivateCommand request, CancellationToken cancellationToken)
         {
-            var result = await _accountService.DeactivateAsync(request.Email, request.Password);
+            var result = await _accountService.DeactivateAsync(request.Deactivate);
             return result;
         }
     }

@@ -13,8 +13,7 @@ namespace DigitalBroker.Application.Handlers
 
         public async Task<bool> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            await _accountService.RegisterAsync(
-                request.FirstName, request.LastName, request.Email, request.Password);
+            await _accountService.RegisterAsync(request.registerRequest);
             return true;
         }
     }

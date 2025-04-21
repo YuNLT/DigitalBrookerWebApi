@@ -1,5 +1,5 @@
 ﻿using DigitalBroker.Application.Commands;
-using DigitalBrooker.Domain.Entities.Request;
+using DigitalBroker.Application.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,26 +23,25 @@ namespace DigitalBrookerWebApi.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody] RegisterRequest registerRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterCommand request, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(new RegisterCommand(registerRequest.FirstName,
-                registerRequest.LastName, registerRequest.Email, registerRequest.Password));
-            if(!result)
-                return BadRequest("Login Fail");
-            return Ok();
+            var result = await _mediatR.Send(request, cancellationToken);
+            if(result is false)
+                return BadRequest("Registration Fail Fail");
+            return Ok("Registration Succeed");
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest, CancellationToken cancellationToken)
+        public async Task<IActionResult> Login([FromBody] LoginCommand loginRequest, CancellationToken cancellationToken)
         {
-            await _mediatR.Send(new LoginCommand(loginRequest.Email, loginRequest.Password));
+            await _mediatR.Send(loginRequest, cancellationToken);
             return Ok();
         }
 
         [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgetPassword request)
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgetPasswordCommand forgetPasswordRequest, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(new ForgetPasswordCommand(request.Email));
+            var result = await _mediatR.Send(forgetPasswordRequest, cancellationToken);
             if (!result)
                 return NotFound("Email not found.");
 
@@ -50,9 +49,9 @@ namespace DigitalBrookerWebApi.Controllers
         }
 
         [HttpPatch("Reset-Password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPassword request, CancellationToken cancellation)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(new ResetPasswordCommand(request.ResetPasswordToken, request.Password));
+            var result = await _mediatR.Send(request, cancellationToken);
 
             if (result)
                 return Ok(new { message = "Password reset successful." });
@@ -61,31 +60,31 @@ namespace DigitalBrookerWebApi.Controllers
         }
 
         [HttpPatch("Deactivate")]
-        public async Task<IActionResult> DeactivateUser([FromBody] Deactivate request)
+        public async Task<IActionResult> DeactivateUser([FromBody] DeactivateCommand request, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(new DeactivateCommand(request.Email, request.Password));
+            var result = await _mediatR.Send(request, cancellationToken);
             return Ok(result);
         }
 
         [HttpPost("RefreshToken")]
-        public async Task<IActionResult> RefreshTokenAsync()
+        public async Task<IActionResult> RefreshTokenAsync([FromBody]RefreshTokenCommand refreshTokenCommand, CancellationToken cancellationToken)
         {
-            var refreshToken = HttpContext.Request.Cookies["refresh_token"];
-            await _mediatR.Send(new  RefreshTokenCommand(refreshToken));
+            var refreshTokenTokenCommand = HttpContext.Request.Cookies["refresh_token"];
+            await _mediatR.Send(refreshTokenCommand);
             return Ok();
         }
 
         [HttpPost("SeeRoleToAdmin")]
-        public async Task<IActionResult> SeeRoleToAdminAsync([FromBody] RoleUpdatePermission request)
+        public async Task<IActionResult> SeeRoleToAdminAsync([FromBody]SeedRoleToAdminCommand request, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(new SeedRoleToAdminCommand(request.Email));
+            var result = await _mediatR.Send(request, cancellationToken);
             return Ok(result);
         }
 
         [HttpPost("SeeRoleToSeller")]
-        public async Task<IActionResult> SeeRoleToSellerAsync([FromBody] RoleUpdatePermission request)
+        public async Task<IActionResult> SeeRoleToSellerAsync([FromBody]SeedRoleToSellerCommand request, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(new SeedRoleToSellerCommand(request.Email));
+            var result = await _mediatR.Send(request, cancellationToken);
             return Ok(result);
         }
     }

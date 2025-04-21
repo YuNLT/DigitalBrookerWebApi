@@ -14,7 +14,7 @@ namespace DigitalBroker.Application.Handlers
 
         public async Task<bool> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            await _accountService.ResetPasswordAsync(request.ResetPasswordToken, request.Password);
+            await _accountService.ResetPasswordAsync(request.ResetPassword);
             return true;
         }
     }

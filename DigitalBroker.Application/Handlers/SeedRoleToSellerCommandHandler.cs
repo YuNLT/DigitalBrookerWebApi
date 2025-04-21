@@ -13,7 +13,7 @@ namespace DigitalBroker.Application.Handlers
         }
         public Task<string> Handle(SeedRoleToSellerCommand request, CancellationToken cancellationToken)
         {
-            var result = _accountService.SeedRoleToSellerAsync(request.Email);
+            var result = _accountService.SeedRoleToSellerAsync(request.RoleUpdatePermission);
             if (result != null)
             {
                 return Task.FromResult("Seed Role to Seller Successfully");

@@ -1,4 +1,5 @@
 ﻿using DigitalBroker.Application.Abstracts;
+using DigitalBroker.Application.DTOs;
 using DigitalBroker.Application.Exception;
 using DigitalBrooker.Domain.Entities.Models;
 using DigitalBrooker.Domain.Exception;
@@ -24,23 +25,23 @@ namespace DigitalBroker.Application.Services
         }
 
         //Method to register a new user
-        public async Task RegisterAsync(string firstName, string lastName, string email, string password)
+        public async Task RegisterAsync(RegisterRequest request)
         {
             //check if the user already exists in the database
-            var Existinguser = await _userManager.FindByEmailAsync(email) != null;
+            var Existinguser = await _userManager.FindByEmailAsync(request.Email) != null;
             if (Existinguser)
             {
-                throw new UserAlreadyExistException(email);
+                throw new UserAlreadyExistException(request.Email);
             }
 
             var newUser = User.Create(
-                firstName,
-                lastName,
-                email
+                request.FirstName,
+                request.LastName,
+                request.Email
             );
 
             //add hash password
-            newUser.PasswordHash = _userManager.PasswordHasher.HashPassword(newUser, password);
+            newUser.PasswordHash = _userManager.PasswordHasher.HashPassword(newUser, request.Password);
 
             var result = await _userManager.CreateAsync(newUser);
 
@@ -56,18 +57,18 @@ namespace DigitalBroker.Application.Services
         }
 
         //Method to login a user
-        public async Task LoginAsync(string email, string password)
+        public async Task LoginAsync(LoginRequest request)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, password))
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, request.Password))
             {
-                throw new LoginFailException(email);
+                throw new LoginFailException(request.Email);
             }
 
             //check if the user is active or not
             if (!user.IsActive)
             {
-                throw new IsActiveException(email);
+                throw new IsActiveException(request.Email);
             }
 
             //get the user role
@@ -134,9 +135,9 @@ namespace DigitalBroker.Application.Services
             _authTokenProcessor.WriteTokenInHttpOnlyCookie("refresh_token", newRefreshToken, refreshTokenExpireTime);//token that we created above
         }
 
-        public async Task ForgetPasswordAsync(string email)
+        public async Task ForgetPasswordAsync(ForgetPassword forgetPassword)
         {
-            var user = await _userRepository.GetByEmailAsync(email);
+            var user = await _userRepository.GetByEmailAsync(forgetPassword.Email);
             if (user == null)
             {
                 throw new ForgetPasswordFailException("There is no user with this email");
@@ -164,12 +165,12 @@ namespace DigitalBroker.Application.Services
             var subject = "Reset Your Password";
             var body = $"Here is your reset token: {token}";
 
-           await _smtpEmailService.SentPasswordAsync(email, subject, body);
+           await _smtpEmailService.SentPasswordAsync(forgetPassword.Email, subject, body);
         }
 
-        public async Task ResetPasswordAsync(Guid resetToken, string newPassword)
+        public async Task ResetPasswordAsync(ResetPassword resetPassword)
         {
-            var passwordReset = await _userRepository.GetValidPasswordResetTokenAsync(resetToken);
+            var passwordReset = await _userRepository.GetValidPasswordResetTokenAsync(resetPassword.ResetPasswordToken);
             if (passwordReset == null)
             {
                 throw new MisMatchTokenException("Password Token does not match");
@@ -181,18 +182,18 @@ namespace DigitalBroker.Application.Services
                 throw new EmptyPasswordResetTokenException("There is no user with accessible to the this password reset token or user is emplty");
             }
             var hasher = new PasswordHasher<User>();
-            user.PasswordHash = hasher.HashPassword(user, newPassword);
+            user.PasswordHash = hasher.HashPassword(user, resetPassword.Password);
 
             await _userRepository.UpdateUserPasswordAsync(user);
             await _userRepository.DeletePasswordResetTokenAsync(passwordReset);
         }
 
-        public async Task<string> DeactivateAsync(string email, string password)
+        public async Task<string> DeactivateAsync(Deactivate deactivate)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, password))
+            var user = await _userManager.FindByEmailAsync(deactivate.Email);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, deactivate.Password))
             {
-                throw new LoginFailException(email);
+                throw new LoginFailException(deactivate.Email);
             }
             user.IsActive = false;
             var result = await _userManager.UpdateAsync(user);
@@ -202,32 +203,32 @@ namespace DigitalBroker.Application.Services
             }
             return "User deactivation failed";
         }
-        public async Task SeedRoleToAdminAsync(string email)
+        public async Task SeedRoleToAdminAsync(RoleUpdatePermission roleUpdatePermission)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(roleUpdatePermission.Email);
             if (user == null)
             {
-                throw new UserAlreadyExistException(email);
+                throw new UserAlreadyExistException(roleUpdatePermission.Email);
             }
             var isAdmin = await _userManager.IsInRoleAsync(user, StaticUserRole.Admin);
             if (isAdmin)
             {
-                throw new UserAlreadyExistException(email);
+                throw new UserAlreadyExistException(roleUpdatePermission.Email);
             }
             await _userManager.AddToRoleAsync(user, StaticUserRole.Admin);
         }
 
-        public async Task SeedRoleToSellerAsync(string email)
+        public async Task SeedRoleToSellerAsync(RoleUpdatePermission roleUpdatePermission)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(roleUpdatePermission.Email);
             if (user == null)
             {
-                throw new UserAlreadyExistException(email);
+                throw new UserAlreadyExistException(roleUpdatePermission.Email);
             }
             var isSeller = await _userManager.IsInRoleAsync(user, StaticUserRole.Seller);
             if (isSeller)
             {
-                throw new UserAlreadyExistException(email);
+                throw new UserAlreadyExistException(roleUpdatePermission.Email);
             }
             await _userManager.AddToRoleAsync(user, StaticUserRole.Seller);
         }

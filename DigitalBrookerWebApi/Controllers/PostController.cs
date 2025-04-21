@@ -1,7 +1,6 @@
 ﻿using DigitalBroker.Application.Commands;
+using DigitalBroker.Application.DTOs;
 using DigitalBroker.Application.Querirs;
-using DigitalBrooker.Domain.Entities.Request;
-using DigitalBrooker.Domain.ValueObjects;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,28 +27,13 @@ namespace DigitalBrookerWebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPost("PostRequest")]
-        public async Task<IActionResult> PostRequestAsync([FromForm]PostRequest dto, CancellationToken cancellation)
+        [HttpPost("PostCreateRequest")]
+        public async Task<IActionResult> PostRequestAsync([FromForm]CreatePostAndSellerRequestCommand request, 
+            CancellationToken cancellationToken)
         {
             try
             {
-                using var ms =new MemoryStream();
-                await dto.Image.CopyToAsync(ms);
-                var imageByte = ms.ToArray();
-                var command = new CreatePostAndSellerRequestCommand(
-            dto.Address,
-            dto.Price,
-            dto.Description,
-            imageByte,
-            dto.PropertyTypeValue,
-            dto.Township,
-            dto.Title,
-            dto.UserId,
-            dto.AppointmentDate,
-            dto.RequestStatusValue
-                );
-
-                var result = await _mediatR.Send(command);
+                var result = await _mediatR.Send(request, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

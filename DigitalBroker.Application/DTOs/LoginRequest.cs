@@ -1,4 +1,5 @@
-﻿namespace DigitalBrooker.Domain.Entities.Request
+﻿
+namespace DigitalBroker.Application.DTOs
 {
     public record LoginRequest
     {

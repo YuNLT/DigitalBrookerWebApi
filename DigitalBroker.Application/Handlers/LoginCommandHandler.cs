@@ -14,7 +14,7 @@ namespace DigitalBroker.Application.Handlers
 
         public async Task<bool> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            await _accountService.LoginAsync(request.Email,request.Password);
+            await _accountService.LoginAsync(request.LoginRequest);
             return true;
         }
     }

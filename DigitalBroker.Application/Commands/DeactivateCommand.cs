@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using DigitalBroker.Application.DTOs;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,6 @@ namespace DigitalBroker.Application.Commands
 {
     public class DeactivateCommand : IRequest<string>
     { 
-        public string Email { get; set; } 
-        public string Password { get; set; }
-        public DeactivateCommand(string email, string password)
-        {
-            Email = email;
-            Password = password;
-        }
+        public Deactivate Deactivate { get; set; }
     }
 }

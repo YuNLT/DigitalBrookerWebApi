@@ -1,7 +1,7 @@
 ﻿using DigitalBroker.Application.Abstracts;
+using DigitalBroker.Application.DTOs;
 using DigitalBroker.Application.Exception;
 using DigitalBroker.Application.Querirs;
-using DigitalBrooker.Domain.Entities.Request;
 using MediatR;
 
 namespace DigitalBroker.Application.Handlers

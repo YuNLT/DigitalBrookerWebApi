@@ -14,9 +14,7 @@ namespace DigitalBroker.Application.Handlers
 
         public async Task<string> Handle(CreatePostAndSellerRequestCommand request, CancellationToken cancellationToken)
         {
-            await _postService.CreatePostAndSellerRequestAsync(request.Address, request.Price, request.Description,
-                request.Image, request.PropertyTypeValue, request.Township, request.Title, request.UserId, request.AppointmentDate,
-                request.RequestStatusValue);
+            await _postService.CreatePostAndSellerRequestAsync(request.PostRequest);
             return "Post Requested Successfully";
         }
     }

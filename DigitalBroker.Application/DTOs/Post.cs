@@ -1,12 +1,7 @@
 ﻿using DigitalBrooker.Domain.ValueObjects;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DigitalBrooker.Domain.Entities.Request
+namespace DigitalBroker.Application.DTOs
 {
     public class Post
     {

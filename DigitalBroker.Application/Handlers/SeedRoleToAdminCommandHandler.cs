@@ -12,7 +12,7 @@ namespace DigitalBroker.Application.Handlers
         }
         public Task<string> Handle(SeedRoleToAdminCommand request, CancellationToken cancellationToken)
         {
-            var result = _accountService.SeedRoleToAdminAsync(request.Email);
+            var result = _accountService.SeedRoleToAdminAsync(request.RoleUpdatePermission);
             if (result != null)
             {
                 return Task.FromResult("Seed Role to Admin Successfully");
