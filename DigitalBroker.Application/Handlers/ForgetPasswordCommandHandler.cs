@@ -4,7 +4,7 @@ using MediatR;
 
 namespace DigitalBroker.Application.Handlers
 {
-    public class ForgetPasswordCommandHandler : IRequestHandler<ForgetPasswordCommand, bool>
+    public class ForgetPasswordCommandHandler : IRequestHandler<ForgetPasswordCommand, Unit>
     {
         private readonly IAccountService _accountService;
         public ForgetPasswordCommandHandler(IAccountService accountService)
@@ -12,10 +12,10 @@ namespace DigitalBroker.Application.Handlers
             _accountService = accountService;
         }
 
-        public async Task<bool> Handle(ForgetPasswordCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ForgetPasswordCommand request, CancellationToken cancellationToken)
         {
             await _accountService.ForgetPasswordAsync(request.ForgetPassword);
-            return true;
+            return Unit.Value;
         }
     }
 }

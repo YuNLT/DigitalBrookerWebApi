@@ -25,10 +25,8 @@ namespace DigitalBrookerWebApi.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> RegisterAsync([FromBody] RegisterCommand request, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(request, cancellationToken);
-            if(result is false)
-                return BadRequest("Registration Fail Fail");
-            return Ok("Registration Succeed");
+            await _mediatR.Send(request, cancellationToken);
+            return Ok();
         }
 
         [HttpPost("Login")]
@@ -41,29 +39,22 @@ namespace DigitalBrookerWebApi.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgetPasswordCommand forgetPasswordRequest, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(forgetPasswordRequest, cancellationToken);
-            if (!result)
-                return NotFound("Email not found.");
-
+            await _mediatR.Send(forgetPasswordRequest, cancellationToken);
             return Ok();
         }
 
         [HttpPatch("Reset-Password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(request, cancellationToken);
-
-            if (result)
-                return Ok(new { message = "Password reset successful." });
-
-            return BadRequest(new { message = "Invalid or expired reset token." });
+            await _mediatR.Send(request, cancellationToken);
+            return Ok();
         }
 
         [HttpPatch("Deactivate")]
         public async Task<IActionResult> DeactivateUser([FromBody] DeactivateCommand request, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(request, cancellationToken);
-            return Ok(result);
+            await _mediatR.Send(request, cancellationToken);
+            return Ok();
         }
 
         [HttpPost("RefreshToken")]
@@ -77,15 +68,15 @@ namespace DigitalBrookerWebApi.Controllers
         [HttpPost("SeeRoleToAdmin")]
         public async Task<IActionResult> SeeRoleToAdminAsync([FromBody]SeedRoleToAdminCommand request, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(request, cancellationToken);
-            return Ok(result);
+            await _mediatR.Send(request, cancellationToken);
+            return Ok();
         }
 
         [HttpPost("SeeRoleToSeller")]
         public async Task<IActionResult> SeeRoleToSellerAsync([FromBody]SeedRoleToSellerCommand request, CancellationToken cancellationToken)
         {
-            var result = await _mediatR.Send(request, cancellationToken);
-            return Ok(result);
+            await _mediatR.Send(request, cancellationToken);
+            return Ok();
         }
     }
 }

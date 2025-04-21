@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DigitalBroker.Application.Commands
 {
-    public class DeactivateCommand : IRequest<string>
+    public class DeactivateCommand : IRequest<Unit>
     { 
         public Deactivate Deactivate { get; set; }
     }

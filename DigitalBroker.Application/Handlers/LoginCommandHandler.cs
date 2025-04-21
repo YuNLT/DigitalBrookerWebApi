@@ -4,7 +4,7 @@ using MediatR;
 
 namespace DigitalBroker.Application.Handlers
 {
-    public class LoginCommandHandler : IRequestHandler<LoginCommand, bool>
+    public class LoginCommandHandler : IRequestHandler<LoginCommand, Unit>
     {
         private readonly IAccountService _accountService;
         public LoginCommandHandler(IAccountService accountService)
@@ -12,10 +12,10 @@ namespace DigitalBroker.Application.Handlers
             _accountService = accountService;
         }
 
-        public async Task<bool> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             await _accountService.LoginAsync(request.LoginRequest);
-            return true;
+            return Unit.Value;
         }
     }
 }

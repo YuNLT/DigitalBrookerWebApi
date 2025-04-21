@@ -4,7 +4,7 @@ using MediatR;
 
 namespace DigitalBroker.Application.Handlers
 {
-    public class CreatePostAndSellerRequestCommandHandler : IRequestHandler<CreatePostAndSellerRequestCommand, string>
+    public class CreatePostAndSellerRequestCommandHandler : IRequestHandler<CreatePostAndSellerRequestCommand, Unit>
     {
         private readonly IPostService _postService;
         public CreatePostAndSellerRequestCommandHandler(IPostService postService)
@@ -12,10 +12,10 @@ namespace DigitalBroker.Application.Handlers
             _postService = postService;
         }
 
-        public async Task<string> Handle(CreatePostAndSellerRequestCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreatePostAndSellerRequestCommand request, CancellationToken cancellationToken)
         {
             await _postService.CreatePostAndSellerRequestAsync(request.PostRequest);
-            return "Post Requested Successfully";
+            return Unit.Value;
         }
     }
 }

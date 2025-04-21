@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DigitalBroker.Application.Commands
 {
-    public class CreatePostAndSellerRequestCommand : IRequest<string>
+    public class CreatePostAndSellerRequestCommand : IRequest<Unit>
     {
         public PostRequest PostRequest { get; set; }
     }

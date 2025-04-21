@@ -3,7 +3,7 @@ using DigitalBroker.Application.Commands;
 using MediatR;
 namespace DigitalBroker.Application.Handlers
 {
-    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, bool>
+    public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Unit>
     {
         public readonly IAccountService _accountService;
         public RegisterCommandHandler(IAccountService accountService)
@@ -11,10 +11,10 @@ namespace DigitalBroker.Application.Handlers
             _accountService = accountService;
         }
 
-        public async Task<bool> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
             await _accountService.RegisterAsync(request.registerRequest);
-            return true;
+            return Unit.Value;
         }
     }
 }

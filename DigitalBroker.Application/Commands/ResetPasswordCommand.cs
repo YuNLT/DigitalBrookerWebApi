@@ -2,7 +2,7 @@
 using MediatR;
 namespace DigitalBroker.Application.Commands
 {
-    public class ResetPasswordCommand : IRequest<bool>
+    public class ResetPasswordCommand : IRequest<Unit>
     {
         public ResetPassword ResetPassword { get; set; }
     }

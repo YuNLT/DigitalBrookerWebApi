@@ -33,8 +33,8 @@ namespace DigitalBrookerWebApi.Controllers
         {
             try
             {
-                var result = await _mediatR.Send(request, cancellationToken);
-                return Ok(result);
+                await _mediatR.Send(request, cancellationToken);
+                return Ok();
             }
             catch (Exception ex)
             {

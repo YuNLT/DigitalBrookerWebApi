@@ -3,24 +3,17 @@ using DigitalBroker.Application.Commands;
 using MediatR;
 namespace DigitalBroker.Application.Handlers
 {
-    public class SeedRoleToAdminCommandHandler : IRequestHandler<SeedRoleToAdminCommand, string>
+    public class SeedRoleToAdminCommandHandler : IRequestHandler<SeedRoleToAdminCommand, Unit>
     {
         private readonly IAccountService _accountService;
         public SeedRoleToAdminCommandHandler(IAccountService accountService)
         {
             _accountService = accountService;
         }
-        public Task<string> Handle(SeedRoleToAdminCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(SeedRoleToAdminCommand request, CancellationToken cancellationToken)
         {
-            var result = _accountService.SeedRoleToAdminAsync(request.RoleUpdatePermission);
-            if (result != null)
-            {
-                return Task.FromResult("Seed Role to Admin Successfully");
-            }
-            else
-            {
-                return Task.FromResult("Seed Role to Admin Failed");
-            }
+            await _accountService.SeedRoleToAdminAsync(request.RoleUpdatePermission);
+            return Unit.Value;
         }
     }
 }
