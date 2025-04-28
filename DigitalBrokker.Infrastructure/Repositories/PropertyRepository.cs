@@ -36,7 +36,7 @@ namespace DigitalBrokker.Infrastructure.Repositories
         }
 
         public async Task<string> GetLatestPropertyViewIdAsync()
-        {// Get all IDs that match the pattern
+        {
             var validIds = await _applicationDbContext.Properties
                 .Where(p => p.PropertyViewId.StartsWith("PVD-"))
                 .Select(p => p.PropertyViewId)
@@ -53,8 +53,6 @@ namespace DigitalBrokker.Infrastructure.Repositories
                         maxNumber = number;
                 }
             }
-
-            // Generate next ID
             int nextNumber = maxNumber + 1;
             return $"PVD-{nextNumber:D8}";
         }
@@ -62,7 +60,6 @@ namespace DigitalBrokker.Infrastructure.Repositories
             string propertyTypeValue, string township, string title, Guid userId)
         {
             var propertyViewId = await GetLatestPropertyViewIdAsync();
-            //Create a new PropertyType opject and set it as PropertyType in model
             using var ms = new MemoryStream();
             await image.CopyToAsync(ms);
             var imageByte = ms.ToArray();

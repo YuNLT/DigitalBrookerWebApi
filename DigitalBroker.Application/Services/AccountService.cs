@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DigitalBroker.Application.Services
 {
-    //responsible for creating new user and login functionality
     public class AccountService : IAccountService
     {
         private readonly IAuthTokenProcessor _authTokenProcessor;
@@ -23,11 +22,8 @@ namespace DigitalBroker.Application.Services
             _userRepository = userRepository;
             _smtpEmailService = smtpEmailService;
         }
-
-        //Method to register a new user
         public async Task RegisterAsync(RegisterRequest request)
         {
-            //check if the user already exists in the database
             var Existinguser = await _userManager.FindByEmailAsync(request.Email) != null;
             if (Existinguser)
             {
@@ -39,24 +35,16 @@ namespace DigitalBroker.Application.Services
                 request.LastName,
                 request.Email
             );
-
-            //add hash password
             newUser.PasswordHash = _userManager.PasswordHasher.HashPassword(newUser, request.Password);
 
             var result = await _userManager.CreateAsync(newUser);
-
-            //check creation succeed or not
             if (!result.Succeeded)
             {
                 throw new RegistrationfailException(result.Errors.Select(e => e.Description)
                     .ToList());
             }
-
-            //add default role to the user
             await _userManager.AddToRoleAsync(newUser, StaticUserRole.Buyer);
         }
-
-        //Method to login a user
         public async Task LoginAsync(LoginRequest request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -65,74 +53,49 @@ namespace DigitalBroker.Application.Services
                 throw new LoginFailException(request.Email);
             }
 
-            //check if the user is active or not
             if (!user.IsActive)
             {
                 throw new IsActiveException(request.Email);
             }
 
-            //get the user role
             IList<string> roles = await _userManager.GetRolesAsync(user);
-
-            //create jwt token and refresh token for the user
             var (token, expireTime) = _authTokenProcessor.GenerateToken(user, roles);
             var refreshToken = _authTokenProcessor.GenerateRefreshToken();
-            //create refreshtoken's expire time
             var refreshTokenExpireTime = DateTime.UtcNow.AddDays(7);
-
-            //assign the refresh token to the user
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = refreshTokenExpireTime;
 
             await _userManager.UpdateAsync(user);
-
-            //write the token in the cookie. Method(tokenname, token, expiretime)
-            _authTokenProcessor.WriteTokenInHttpOnlyCookie("access_token", token, expireTime);//current token
-            _authTokenProcessor.WriteTokenInHttpOnlyCookie("refresh_token", refreshToken, refreshTokenExpireTime);//token that we created above
+            _authTokenProcessor.WriteTokenInHttpOnlyCookie("access_token", token, expireTime);
+            _authTokenProcessor.WriteTokenInHttpOnlyCookie("refresh_token", refreshToken, refreshTokenExpireTime);
+            
         }
-
-        //method to refresh the access token that was expired
         public async Task RefreshTokenAsync(string? refreshToken)
         {
             if(string.IsNullOrWhiteSpace(refreshToken))
             {
                 throw new RefreshTokenException("Refresh token is empty or missing");
             }
-
-            //To get the user based on the provided refresh token on the databse
-            //To do that create custom repository in the infracture layer to call the database and to check the based on the refresh token
-            //so that we know able to retrieve the user or not 
             var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
             if (user == null)
             {
                 throw new RefreshTokenException("Unable to find user with this refresh token");
             }
 
-            //check if the refresh token is expired or not
             if(user.RefreshTokenExpiryTime < DateTime.UtcNow)
             {
-                throw new RefreshTokenException("Refresh token is expired"); //have to login again
+                throw new RefreshTokenException("Refresh token is expired"); 
             }
-
-            //get the user role
             IList<string> roles = await _userManager.GetRolesAsync(user);
-
-            //if it's not expire, generate new token and refresh token
-            //create jwt token and refresh token for the user
             var (token, expireTime) = _authTokenProcessor.GenerateToken(user, roles);
             var newRefreshToken = _authTokenProcessor.GenerateRefreshToken();
-            //create refreshtoken's expire time
             var refreshTokenExpireTime = DateTime.UtcNow.AddDays(7);
-
-            //assign the refresh token to the user
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpiryTime = refreshTokenExpireTime;
 
             await _userManager.UpdateAsync(user);
-
-            //write the token in the cookie. Method(tokenname, token, expiretime)
-            _authTokenProcessor.WriteTokenInHttpOnlyCookie("access_token", token, expireTime);//current token
-            _authTokenProcessor.WriteTokenInHttpOnlyCookie("refresh_token", newRefreshToken, refreshTokenExpireTime);//token that we created above
+            _authTokenProcessor.WriteTokenInHttpOnlyCookie("access_token", token, expireTime);
+            _authTokenProcessor.WriteTokenInHttpOnlyCookie("refresh_token", newRefreshToken, refreshTokenExpireTime);
         }
 
         public async Task ForgetPasswordAsync(ForgetPassword forgetPassword)

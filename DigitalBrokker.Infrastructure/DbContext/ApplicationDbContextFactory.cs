@@ -11,8 +11,6 @@ namespace DigitalBrokker.Infrastructure.DbContext
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
-
-            // ✅ Get connection string
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();

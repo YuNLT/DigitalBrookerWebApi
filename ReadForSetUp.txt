@@ -1,0 +1,10 @@
+DATABASE-SETUP
+*Insert your connection string in appsettings.json of web api layer
+*Insert your connectionstring in appsettings.json of Infrastructure layer for the design time
+*Run this command in the Package Manager Console
+Add-Migration InitialCreate
+Update-Database
+//Delete if the migation file is pulled into your repo
+
+SMTP-SETUP
+*Insert your SMTP settings in appsettings.json

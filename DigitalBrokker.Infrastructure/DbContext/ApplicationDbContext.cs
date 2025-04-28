@@ -23,10 +23,10 @@ namespace DigitalBrokker.Infrastructure.DbContext
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<User>()//Entity Type Builder User
+            builder.Entity<User>()
                 .Property(u=>u.FirstName).HasMaxLength(256);
             base.OnModelCreating(builder);
-            builder.Entity<User>()//Entity Type Builder User
+            builder.Entity<User>()
                 .Property(u => u.LastName).HasMaxLength(256);
 
             base.OnModelCreating(builder);
@@ -87,9 +87,8 @@ namespace DigitalBrokker.Infrastructure.DbContext
             {
                 entity.Property(p => p.PropertyViewId).HasMaxLength(36);
                 entity.Property(p => p.ComfirmCode).HasDefaultValue(100);
-                // 👇 Important: Configure the backing string property, NOT the value object
                 entity.Property(p => p.BuyerRequestTypeValue)
-                      .HasColumnName("BuyerRequestType") // Set column name in DB
+                      .HasColumnName("BuyerRequestType") 
                       .HasMaxLength(20);
 
                 entity.ToTable(tb =>

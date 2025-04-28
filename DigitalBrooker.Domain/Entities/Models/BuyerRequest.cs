@@ -16,11 +16,7 @@ namespace DigitalBrooker.Domain.Entities.Models
         public User? User { get; set; }
         public DateTime AppointmentDate { get; set; }
         public string? ComfirmCode { get; set; }
-
-        // Backing field to store string in DB
         public string BuyerRequestTypeValue { get; set; } = BuyerRequestType.Tour;
-
-        // Not mapped, used in code
         [NotMapped]
         public BuyerRequestType BuyerRequestType
         {

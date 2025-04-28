@@ -20,12 +20,8 @@ namespace DigitalBrokker.Infrastructure.DependencyInjections
             services.AddScoped<IAuthTokenProcessor, AuthProcessor>();
             services.AddScoped<IPropertyRepository, PropertyRepository>();
             services.AddScoped<ISellerRequestRepository, SellerRequestRepository>();
-
-            // Add DbContext Service
             services.AddDbContext<ApplicationDbContext>(options =>
              options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
-            //Add Jwt
             services.Configure<Jwt>(configuration.GetSection(Jwt.jwtkey));
 
             var jwtOptions = configuration.GetSection(Jwt.jwtkey).Get<Jwt>() ?? throw new ArgumentException(nameof(Jwt));
